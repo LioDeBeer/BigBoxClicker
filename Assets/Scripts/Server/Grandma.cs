@@ -5,19 +5,28 @@ using UnityEngine;
 public class Grandma : CookieProcess
 {
     private ProcessData processData;
+    private BuildingConfig configData;
 
-    public override void Init(ProcessData data)
+    public override void Init(ProcessData data, BuildingConfig config)
     {
         processData = data;
+        configData = config;
     }
 
-    public override float GetTickTime()
+    public override int GetTickTime()
     {
-        return 1.0f;
+        if (configData)
+        {
+            return configData.tickRate;
+        }
+        return 1000;
     }
 
-    public override void Tick(int tickCount, UserData userData)
+    public override void Tick(long tickCount, UserData userData)
     {
-        userData.cookieCount += tickCount * 5; //TODO - make config class, and put rate there, as well as upgrades
+        if (configData != null)
+        {
+            userData.cookieCount += tickCount * configData.levels[processData.level].rate;
+        }
     }
 }

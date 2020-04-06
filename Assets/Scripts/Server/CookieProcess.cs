@@ -5,9 +5,9 @@ using UnityEngine;
 // base class for a timed powerup
 public abstract class CookieProcess
 {
-    public abstract void Init(ProcessData data);
+    public abstract void Init(ProcessData data, BuildingConfig config);
 
-    public abstract float GetTickTime();
+    public abstract int GetTickTime();
 
-    public abstract void Tick(int tickCount, UserData userData);
+    public abstract void Tick(long tickCount, UserData userData);
 }

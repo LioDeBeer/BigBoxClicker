@@ -12,24 +12,33 @@ public enum ProcessType
     COUNT
 }
 
+[System.Serializable]
 public class ProcessData
 {
     public int count;
     public int level;
-    public float lastProcessedTime;
+    public long lastProcessedTime;
 
 }
 
+[System.Serializable]
 public class UserData
 {
     public long cookieCount;
     public ProcessData[] processData = new ProcessData[(int)ProcessType.COUNT];
     public CookieProcess[] processes = new CookieProcess[(int)ProcessType.COUNT];
 
-    public void InitProcesses()
+    public void InitProcesses(BuildingConfig[] config)
     {
-        processes[(int)ProcessType.Grandma] = new Grandma();
-        processes[(int)ProcessType.Grandma].Init(processData[(int)ProcessType.Grandma]);
+        if (config.Length == (int)ProcessType.COUNT)
+        {
+            processes[(int)ProcessType.Grandma] = new Grandma();
+            processes[(int)ProcessType.Grandma].Init(processData[(int)ProcessType.Grandma], config[(int)ProcessType.Grandma]);
+        }
+        else
+        {
+            Debug.LogError("Invalid config passed in to InitProcesses");
+        }
     }
 
 }

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d13a16c1e214c564ba5fddcbefa9f101, type: 3}
+  m_Name: GrandmaConfig
+  m_EditorClassIdentifier: 
+  levels:
+  - minCount: 0
+    cost: 0
+    rate: 5
+    displayName: 
+  - minCount: 1
+    cost: 1000
+    rate: 10
+    displayName: Rolling Pins
+  - minCount: 5
+    cost: 5000
+    rate: 20
+    displayName: Steel Rolling Pins
+  - minCount: 25
+    cost: 50000
+    rate: 40
+    displayName: Lubricated Dentures
+  tickRate: 1000

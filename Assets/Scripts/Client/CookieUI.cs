@@ -35,12 +35,20 @@ public class CookieUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (countTask != null && countTask.IsCompleted)
+        if (countTask != null)
         {
-            confirmedCookies = countTask.Result;
-            cookieCountText.text = (confirmedCookies + bufferedClicks).ToString();
-            countTask = null;
-            predictedClicks = 0;
+            if (countTask.IsCompleted)
+            {
+                confirmedCookies = countTask.Result;
+                cookieCountText.text = (confirmedCookies + bufferedClicks).ToString();
+                countTask = null;
+                predictedClicks = 0;
+            }
+        }
+        else if (Time.time - lastSendTime > 1.0f)
+        {
+            countTask = CookieServer.Instance.RequestProcessUser(userId);
+            lastSendTime = Time.time;
         }
     }
 
