@@ -8,9 +8,9 @@ public class CookieUI : MonoBehaviour
 {
     public Text cookieCountText;
 
-    private Task<int> countTask = null;
+    private Task<long> countTask = null;
     //don't want a server message on each click
-    private int confirmedCookies = 0;
+    private long confirmedCookies = 0;
     private int bufferedClicks = 0;
     private int predictedClicks = 0;
     private float lastSendTime = 0;
