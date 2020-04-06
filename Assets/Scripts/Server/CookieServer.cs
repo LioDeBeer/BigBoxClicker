@@ -18,19 +18,24 @@ public class CookieServer
     static int MockLag = 16;
 
 
-    Dictionary<string, UserData> userData = new Dictionary<string, UserData>();
-    BuildingConfig[] configData = new BuildingConfig[(int)ProcessType.COUNT];
+    Dictionary<string, UserData> userData;
+    ConfigData configData;
 
     public CookieServer()
     {
         userData = new Dictionary<string, UserData>();
-        configData = new BuildingConfig[(int)ProcessType.COUNT];
-        configData[(int)ProcessType.Grandma] = Resources.Load<BuildingConfig>("config/GrandmaConfig");
+        configData = new ConfigData();
     }
 
-    public void BeginSession(string userId)
+    private string GetSavePath(string userId)
     {
-        string path = Application.persistentDataPath + userId + ".json";
+        return Application.persistentDataPath + "/" + userId + ".json";
+    }
+
+    public async Task<UserData> BeginSession(string userId)
+    {
+        await Task.Delay(MockLag);
+        string path = GetSavePath(userId);
         UserData user = new UserData();
         long now = System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond;
         if (File.Exists(path))
@@ -53,12 +58,11 @@ public class CookieServer
                 user.processData[i] = new ProcessData();
                 user.processData[i].lastProcessedTime = now;
             }
-            //testing
-            user.processData[(int)ProcessType.Grandma].count = 1;
         }
-        user.InitProcesses(configData);
+        user.InitProcesses(configData.configData);
         userData[userId] = user;
         ProcessUser(user);
+        return user;
     }
 
     public void EndSession(string userId)
@@ -66,8 +70,10 @@ public class CookieServer
         UserData user;
         if (userData.TryGetValue(userId, out user))
         {
-            string path = Application.persistentDataPath + userId + ".json";
+            string path = GetSavePath(userId);
             File.WriteAllText(path, JsonUtility.ToJson(user));
+            Debug.Log(path);
+            Debug.Log(JsonUtility.ToJson(user));
         }
     }
 
@@ -82,6 +88,26 @@ public class CookieServer
             return user.cookieCount;
         }
         return 0;
+    }
+
+    public async Task<PurchaseResult> MakePurchase(string userId, ProcessType process, int count)
+    {
+        await Task.Delay(MockLag);
+        UserData user;
+        PurchaseResult result = new PurchaseResult();
+        result.processType = process;
+        if (userData.TryGetValue(userId, out user))
+        {
+            long cost = count * configData.configData[(int)process].buildCost;
+            if (user.cookieCount >= cost)
+            {
+                user.cookieCount -= cost;
+                user.processData[(int)process].count += count;
+            }
+            result.buildingCount = user.processData[(int)process].count;
+            result.cookieCount = user.cookieCount;
+        }
+        return result;
     }
 
     public async Task<long> GetCookieCount(string userId)

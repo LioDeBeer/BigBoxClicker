@@ -26,7 +26,7 @@ public class Grandma : CookieProcess
     {
         if (configData != null)
         {
-            userData.cookieCount += tickCount * configData.levels[processData.level].rate;
+            userData.cookieCount += processData.count * tickCount * configData.levels[processData.level].rate;
         }
     }
 }

@@ -15,7 +15,7 @@ public enum ProcessType
 [System.Serializable]
 public class ProcessData
 {
-    public int count;
+    public long count;
     public int level;
     public long lastProcessedTime;
 
@@ -41,4 +41,12 @@ public class UserData
         }
     }
 
+}
+
+[System.Serializable]
+public class PurchaseResult
+{
+    public ProcessType processType;
+    public long buildingCount;
+    public long cookieCount;
 }
