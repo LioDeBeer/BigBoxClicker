@@ -26,6 +26,12 @@ public class BuildingConfig : ScriptableObject
     public ProcessTrigger processTrigger;
     public long buildCost;
     public string displayName;
+    public float costCurve = 1;
+    public long GetBuildCost(long count)
+    {
+        float pow = Mathf.Pow(costCurve, (float)count);
+        return (long)(buildCost * pow);
+    }
 }
 
 public class ConfigData

@@ -96,16 +96,46 @@ public class CookieServer
         UserData user;
         PurchaseResult result = new PurchaseResult();
         result.processType = process;
-        if (userData.TryGetValue(userId, out user))
+        if ((int)process < (int)ProcessType.COUNT && (int)process >= 0)
         {
-            long cost = count * configData.configData[(int)process].buildCost;
-            if (user.cookieCount >= cost)
+            if (userData.TryGetValue(userId, out user))
             {
-                user.cookieCount -= cost;
-                user.processData[(int)process].count += count;
+                long cost = count * configData.configData[(int)process].GetBuildCost(user.processData[(int)process].count);
+                if (user.cookieCount >= cost)
+                {
+                    user.cookieCount -= cost;
+                    user.processData[(int)process].count += count;
+                }
+                result.buildingCount = user.processData[(int)process].count;
+                result.cookieCount = user.cookieCount;
             }
-            result.buildingCount = user.processData[(int)process].count;
-            result.cookieCount = user.cookieCount;
+        }
+        return result;
+    }
+
+    public async Task<PurchaseResult> PurchaseUpgrade(string userId, ProcessType process)
+    {
+        await Task.Delay(MockLag);
+        UserData user;
+        PurchaseResult result = new PurchaseResult();
+        if ((int)process < (int)ProcessType.COUNT && (int)process >= 0)
+        {
+            result.processType = process;
+            if (userData.TryGetValue(userId, out user))
+            {
+                int level = user.processData[(int)process].level;
+                if (level < configData.configData[(int)process].levels.Length - 1)
+                {
+                    long cost = configData.configData[(int)process].levels[level + 1].cost;
+                    if (user.cookieCount >= cost)
+                    {
+                        user.cookieCount -= cost;
+                        ++user.processData[(int)process].level;
+                    }
+                }
+                result.buildingCount = user.processData[(int)process].count;
+                result.cookieCount = user.cookieCount;
+            }
         }
         return result;
     }

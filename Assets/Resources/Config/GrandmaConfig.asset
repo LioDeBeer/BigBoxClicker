@@ -15,7 +15,7 @@ MonoBehaviour:
   levels:
   - minCount: 0
     cost: 0
-    rate: 5
+    rate: 1
     displayName: 
   - minCount: 1
     cost: 1000
@@ -30,3 +30,6 @@ MonoBehaviour:
     rate: 40
     displayName: Lubricated Dentures
   tickRate: 1000
+  processTrigger: 0
+  buildCost: 20
+  displayName: Grandma

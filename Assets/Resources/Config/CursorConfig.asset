@@ -13,17 +13,19 @@ MonoBehaviour:
   m_Name: CursorConfig
   m_EditorClassIdentifier: 
   levels:
-  - minCount: 0
+  - minCount: 1
     cost: 0
     rate: 1
     displayName: 
-  - minCount: 1
+  - minCount: 2
     cost: 0
     rate: 0
     displayName: 
-  - minCount: 0
+  - minCount: 10
     cost: 0
     rate: 0
     displayName: 
   tickRate: 0
   processTrigger: 1
+  buildCost: 0
+  displayName: 

@@ -12,7 +12,7 @@ public class ShopButton : MonoBehaviour
     public void Init(BuildingConfig config, long count)
     {
         nameText.text = config.displayName;
-        costText.text = config.buildCost.ToString();
+        costText.text = config.GetBuildCost(count).ToString();
         countText.text = count.ToString();
     }
 

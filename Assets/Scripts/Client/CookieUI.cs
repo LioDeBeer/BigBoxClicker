@@ -10,6 +10,9 @@ public class CookieUI : MonoBehaviour
     public Transform ShopRoot;
     public GameObject ShopPrefab;
 
+    public Transform UpgradeRoot;
+    public GameObject UpgradePrefab;
+
     private Task<long> countTask = null;
     private Task<PurchaseResult> purchaseTask = null;
     //don't want a server message on each click
@@ -28,6 +31,7 @@ public class CookieUI : MonoBehaviour
         cookieCountText.text = "";
         countTask = CookieServer.Instance.GetCookieCount(CookieGameManager.Instance.UserId);
         ShopPrefab.SetActive(false);
+        UpgradePrefab.SetActive(false);
     }
 
     
@@ -54,6 +58,7 @@ public class CookieUI : MonoBehaviour
                 CookieGameManager.Instance.UserData.cookieCount = result.cookieCount;
                 CookieGameManager.Instance.UserData.processData[(int)result.processType].count = result.buildingCount;
                 UpdateShop();
+                UpdateUpgrades();
                 purchaseTask = null;
             }
         }
@@ -99,7 +104,7 @@ public class CookieUI : MonoBehaviour
                 {
                     button.onClick.AddListener(() =>
                     {
-                        if (userData.cookieCount > config.buildCost && purchaseTask == null)
+                        if (userData.cookieCount > config.GetBuildCost(userData.processData[(int)processType].count) && purchaseTask == null)
                         {
                             purchaseTask = CookieServer.Instance.MakePurchase(CookieGameManager.Instance.UserId, processType, 1);
                         }
@@ -108,6 +113,7 @@ public class CookieUI : MonoBehaviour
             }
         }
         UpdateShop();
+        UpdateUpgrades();
     }
 
     void UpdateShop()
@@ -119,9 +125,54 @@ public class CookieUI : MonoBehaviour
             { 
                 BuildingConfig config = CookieGameManager.Instance.ConfigData.configData[i];
                 ProcessType processType = (ProcessType)i;
-                if (userData.processData[i].count > 0 || userData.cookieCount > config.buildCost)
+                if (userData.processData[i].count > 0 || userData.cookieCount > config.GetBuildCost(userData.processData[i].count))
                 {
                     shopButtons[i].Init(config, userData.processData[i].count);
+                }
+            }
+        }
+    }
+
+    void UpdateUpgrades()
+    {
+        while (UpgradeRoot.childCount > 0)
+        {
+            GameObject child = UpgradeRoot.GetChild(0).gameObject;
+            child.transform.SetParent(null);
+            GameObject.Destroy(child);
+        }
+        UserData userData = CookieGameManager.Instance.UserData;
+        for (int i = 0; i < (int)ProcessType.COUNT; ++i)
+        {
+            ProcessType processType = (ProcessType)i;
+            BuildingConfig config = CookieGameManager.Instance.ConfigData.configData[i];
+            if (config)
+            { 
+                int currentLevel = userData.processData[i].level;
+                if (currentLevel < config.levels.Length - 1)
+                {
+                    if (userData.processData[i].count >= config.levels[currentLevel + 1].minCount)
+                    {
+                        GameObject upgradeObj = GameObject.Instantiate(UpgradePrefab);
+                        upgradeObj.transform.SetParent(UpgradeRoot);
+                        upgradeObj.SetActive(true);
+                        Button button = upgradeObj.GetComponent<Button>();
+                        if (button)
+                        {
+                            button.onClick.AddListener(() =>
+                            {
+                                if (userData.cookieCount > config.levels[currentLevel + 1].cost && purchaseTask == null)
+                                {
+                                    purchaseTask = CookieServer.Instance.PurchaseUpgrade(CookieGameManager.Instance.UserId, processType);
+                                }
+                            });
+                        }
+                        UpgradeButton upgradeButton = upgradeObj.GetComponent<UpgradeButton>();
+                        if (upgradeButton)
+                        {
+                            upgradeButton.Init(config.levels[currentLevel + 1].displayName, config.levels[currentLevel + 1].cost);
+                        }
+                    }
                 }
             }
         }
